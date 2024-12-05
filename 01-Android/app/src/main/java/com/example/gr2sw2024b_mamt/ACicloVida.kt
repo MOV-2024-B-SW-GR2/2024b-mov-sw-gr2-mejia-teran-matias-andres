@@ -50,7 +50,6 @@ class ACicloVida : AppCompatActivity() {
         mostrarSnackbar("OnDestroy")
     }
 
-
     override fun onSaveInstanceState(outState: Bundle){
         outState.run {
             // Guardamos las variables
