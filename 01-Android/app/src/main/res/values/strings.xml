@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">gr2sw2024b_mamt</string>
-    <string name="saludo">Hello world</string>
+    <string name="app_name" translatable="false">gr2sw2024b_mamt</string>
+    <string name="saludo" translatable="false">Hello world</string>
     <color name="saludo_color">#C17301</color>
 </resources>
