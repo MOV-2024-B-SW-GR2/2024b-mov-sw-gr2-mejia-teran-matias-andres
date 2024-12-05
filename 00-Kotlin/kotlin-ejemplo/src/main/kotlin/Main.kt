@@ -25,7 +25,6 @@ fun main(args: Array<String>) {
 
 
 
-
     // When (Switch)
     val estadoCivilWhen = "C"
     when (estadoCivilWhen){
