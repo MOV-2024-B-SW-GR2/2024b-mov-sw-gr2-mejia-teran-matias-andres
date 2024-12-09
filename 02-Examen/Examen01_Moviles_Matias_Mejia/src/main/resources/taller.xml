@@ -1,0 +1,32 @@
+<taller>
+   <cliente>
+      <id>2</id>
+      <nombre>Carlos Bayas</nombre>
+      <fechaRegistro>2001-12-14 00:00:00.0 ECT</fechaRegistro>
+      <esMiembro>false</esMiembro>
+      <reparaciones class="java.util.ArrayList"/>
+   </cliente>
+   <cliente>
+      <id>3</id>
+      <nombre>Santiago Bejarano</nombre>
+      <fechaRegistro>2024-12-15 00:00:00.0 ECT</fechaRegistro>
+      <esMiembro>false</esMiembro>
+      <reparaciones class="java.util.ArrayList"/>
+   </cliente>
+   <cliente>
+      <id>4</id>
+      <nombre>Matias Mejia </nombre>
+      <fechaRegistro>0202-12-12 00:00:00.0 ECT</fechaRegistro>
+      <esMiembro>true</esMiembro>
+      <reparaciones class="java.util.ArrayList">
+         <reparacion>
+            <id>1</id>
+            <descripcion>Mantenimiento de frenos</descripcion>
+            <fechaReparacion>2024-12-12 00:00:00.0 ECT</fechaReparacion>
+            <costo>40.0</costo>
+            <duracionHoras>3</duracionHoras>
+            <garantia>false</garantia>
+         </reparacion>
+      </reparaciones>
+   </cliente>
+</taller>

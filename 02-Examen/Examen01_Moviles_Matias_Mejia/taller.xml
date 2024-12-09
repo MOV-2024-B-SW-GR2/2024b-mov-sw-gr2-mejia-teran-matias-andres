@@ -1,0 +1,58 @@
+<taller>
+   <cliente>
+      <id>1</id>
+      <nombre>Matias Mejia</nombre>
+      <fechaRegistro>2024-12-08 00:00:00.0 ECT</fechaRegistro>
+      <esMiembro>true</esMiembro>
+      <reparacion>
+         <id>1</id>
+         <descripcion>Cambio de rueda</descripcion>
+         <fechaReparacion>2024-12-08 00:00:00.0 ECT</fechaReparacion>
+         <costo>150.0</costo>
+         <duracionHoras>4</duracionHoras>
+         <garantia>false</garantia>
+      </reparacion>
+      <reparacion>
+         <id>2</id>
+         <descripcion>Mantenimiento de frenos</descripcion>
+         <fechaReparacion>2024-12-12 00:00:00.0 ECT</fechaReparacion>
+         <costo>30.0</costo>
+         <duracionHoras>1</duracionHoras>
+         <garantia>false</garantia>
+      </reparacion>
+      <reparacion>
+         <id>3</id>
+         <descripcion>Mantenimiento de Horquilla</descripcion>
+         <fechaReparacion>2024-12-14 00:00:00.0 ECT</fechaReparacion>
+         <costo>70.0</costo>
+         <duracionHoras>2</duracionHoras>
+         <garantia>true</garantia>
+      </reparacion>
+   </cliente>
+   <cliente>
+      <id>2</id>
+      <nombre>Boris Rivera</nombre>
+      <fechaRegistro>2024-12-08 00:00:00.0 ECT</fechaRegistro>
+      <esMiembro>true</esMiembro>
+      <reparacion>
+         <id>1</id>
+         <descripcion>Trabajo de pintura en el marco</descripcion>
+         <fechaReparacion>2024-12-08 00:00:00.0 ECT</fechaReparacion>
+         <costo>300.0</costo>
+         <duracionHoras>72</duracionHoras>
+         <garantia>false</garantia>
+      </reparacion>
+   </cliente>
+   <cliente>
+      <id>3</id>
+      <nombre>Pedro Martins</nombre>
+      <fechaRegistro>2024-12-08 00:00:00.0 ECT</fechaRegistro>
+      <esMiembro>true</esMiembro>
+   </cliente>
+   <cliente>
+      <id>4</id>
+      <nombre>Santiago Bejarano</nombre>
+      <fechaRegistro>2024-12-08 00:00:00.0 ECT</fechaRegistro>
+      <esMiembro>false</esMiembro>
+   </cliente>
+</taller>
