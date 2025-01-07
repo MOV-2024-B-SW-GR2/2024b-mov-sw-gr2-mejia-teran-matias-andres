@@ -2,4 +2,9 @@
     <string name="app_name" translatable="false">gr2sw2024b_mamt</string>
     <string name="saludo" translatable="false">Hello world</string>
     <color name="saludo_color">#C17301</color>
+    <string-array name="string_array_opciones_dialogo">
+        <item>Lunes</item>
+        <item>Martes</item>
+        <item>Miercoles</item>
+    </string-array>
 </resources>

@@ -1,16 +1,20 @@
 package com.example.gr2sw2024b_mamt
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.ContextMenu
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.snackbar.Snackbar
 
 class BListView : AppCompatActivity() {
 
@@ -26,7 +30,7 @@ class BListView : AppCompatActivity() {
             insets
         }
 
-        val listView = findViewById<ListView>(R.id.lv_list_view)
+        val listView = findViewById<ListView>(R.id.cl_list_view)
         val adaptador = ArrayAdapter(
             this, //contexto
             android.R.layout.simple_list_item_1, //xml que vamos a usar
@@ -42,7 +46,7 @@ class BListView : AppCompatActivity() {
         registerForContextMenu(listView)
     }
 
-    var posicionItemSeleccionado = -1
+    var posicionItemSeleccionado = -1 //Variable global
     override fun onCreateContextMenu(
         menu: ContextMenu?,
         v: View?,
@@ -59,17 +63,66 @@ class BListView : AppCompatActivity() {
 
     }
 
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId){
+            R.id.mi_editar -> {
+                mostrarSnackbar("$posicionItemSeleccionado")
+                return true
+            }
+            R.id.mi_eliminar -> {
+                mostrarSnackbar("${posicionItemSeleccionado}") //otra sintaxis
+                abrirDialogo()
+                return true
+            }
+            else -> super.onContextItemSelected(item)
+        }
+    }
 
+    fun mostrarSnackbar(texto: String){
+        var snack = Snackbar.make(
+            findViewById(R.id.cl_list_view),
+            texto,
+            Snackbar.LENGTH_INDEFINITE
+        )
+        snack.show()
+    }
+
+    fun abrirDialogo(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Desea eliminar?")
+        builder.setPositiveButton(
+            "Aceptar",
+            DialogInterface.OnClickListener{dialog, which ->
+                mostrarSnackbar("Eliminar aceptado")
+            }
+        )
+        builder.setNegativeButton(
+            "Cancelar",
+            null
+        )
+        val opciones = resources.getStringArray(
+            R.array.string_array_opciones_dialogo
+        )
+        val seleccionPrevia = booleanArrayOf(
+            true,false,false
+        )
+        builder.setMultiChoiceItems(
+            opciones,
+            seleccionPrevia,
+            {
+                dialog,
+                    which,
+                    isChecked -> mostrarSnackbar(
+                        "${which} $isChecked"
+                    )
+            }
+        )
+        val dialogo = builder.create()
+        dialogo.show()
+    }
 
     fun anadirEntrenador(adaptador: ArrayAdapter<BEntrenador>){
         arreglo.add(BEntrenador(4, "Wendy","d@d.com"))
         adaptador.notifyDataSetChanged()
     }
-
-
-
-
-
-
-
 }

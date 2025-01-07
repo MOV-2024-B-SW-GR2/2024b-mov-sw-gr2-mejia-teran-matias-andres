@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         //Escuchar las acciones del botón
         val botonListView = findViewById<Button>(R.id.btn_ir_list_view)
-        botonCicloVida.setOnClickListener { //escuchamos el clic
+        botonListView.setOnClickListener { //escuchamos el clic
             irActividad(BListView::class.java)
         }
 
