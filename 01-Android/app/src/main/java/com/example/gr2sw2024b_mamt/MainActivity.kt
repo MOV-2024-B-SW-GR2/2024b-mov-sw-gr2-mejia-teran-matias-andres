@@ -58,11 +58,16 @@ class MainActivity : AppCompatActivity() {
                 intentExplicito.putExtra("nombre", "Matias")
                 intentExplicito.putExtra("apellido", "Mejia")
                 intentExplicito.putExtra("edad", 22)
+                intentExplicito.putExtra("entrenador", 34)
+                intentExplicito.putExtra(
+                    "entrenador",
+                    BEntrenador(1,"Andrés","Ejemplo")
+                )
                 callbackContenidoIntentExplicito.launch(intentExplicito)
             }
 
         val botonSqlite = findViewById<Button>(R.id.btn_sqlite)
-        botonListView.setOnClickListener {
+        botonSqlite.setOnClickListener {
             irActividad(ECrudEntrenador::class.java)
         }
 
