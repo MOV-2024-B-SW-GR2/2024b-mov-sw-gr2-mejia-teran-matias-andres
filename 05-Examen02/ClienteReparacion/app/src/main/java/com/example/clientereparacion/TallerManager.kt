@@ -5,9 +5,9 @@ import com.example.clientereparacion.modelo.Taller
 object TallerManager {
     private val talleres = listOf(
         // Coordenadas actualizadas para ubicaciones en Quito
-        Taller(1, "Taller Centro - La Mariscal", -0.2016400, -78.4889600),  // Cerca del parque El Ejido
-        Taller(2, "Taller Norte - La Carolina", -0.1821500, -78.4843900),   // Cerca del parque La Carolina
-        Taller(3, "Taller Sur - Solanda", -0.2627800, -78.5230700)          // Sector de Solanda
+        Taller(1, "Taller - Bici Outlet", -0.2047165888610578, -78.49233581927383),  // Cerca del parque El Ejido
+        Taller(2, "Taller - Lobos Bike", -0.21104303577147118, -78.50066250104811),   // Cerca del parque La Carolina
+        Taller(3, "Taller - BicisEc", -0.210721172876048, -78.49948232921139)          // Sector de Solanda
     )
 
     fun obtenerTalleres(): List<Taller> = talleres
