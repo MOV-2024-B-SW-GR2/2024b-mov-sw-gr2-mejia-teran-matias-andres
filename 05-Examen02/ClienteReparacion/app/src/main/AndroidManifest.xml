@@ -19,7 +19,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="Pon tu clave" />
+            android:value="AIzaSyDjhtfodKwFK4xBh_4xg-83CJ96zkB-sqg" />
 
         <activity
             android:name=".MapaTallerActivity"
