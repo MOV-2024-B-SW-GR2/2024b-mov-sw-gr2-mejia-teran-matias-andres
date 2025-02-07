@@ -8,4 +8,7 @@
     <item
         android:id="@+id/context_menu_eliminar_reparacion"
         android:title="Eliminar reparacion" />
+    <item
+        android:id="@+id/context_menu_ver_mapa"
+        android:title="Ver ubicación en mapa" />
 </menu>

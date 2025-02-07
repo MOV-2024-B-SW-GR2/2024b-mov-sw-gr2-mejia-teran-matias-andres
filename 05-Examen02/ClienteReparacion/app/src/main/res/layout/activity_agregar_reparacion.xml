@@ -70,12 +70,22 @@
         android:id="@+id/cb_garantia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:text="Garantía"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/costo_in" />
+
+    <Spinner
+        android:id="@+id/spinner_taller"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cb_garantia" />
 
     <Button
         android:id="@+id/btn_guardar_reparacion"
@@ -85,6 +95,6 @@
         android:text="Guardar Reparación"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cb_garantia" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner_taller" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

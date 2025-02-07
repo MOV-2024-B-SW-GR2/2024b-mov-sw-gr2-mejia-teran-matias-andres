@@ -65,25 +65,78 @@ class ActivityListarReparaciones : AppCompatActivity() {
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        val info = item.menuInfo as? AdapterView.AdapterContextMenuInfo
-        val position = info?.position
-        reparacionSeleccionada = position?.let { controlador.listarReparacionesPorCliente(clienteSeleccionado!!)[it] }
-        when (item.itemId) {
-            R.id.context_menu_editar_reparacion -> {
-                val intent = Intent(this, ActivityAgregarReparacion::class.java)
-                intent.putExtra("reparacionId", reparacionSeleccionada!!.id.toString())
-                intent.putExtra("clienteId", clienteSeleccionado.toString())
-                startActivity(intent)
+        try {
+            val info = item.menuInfo as? AdapterView.AdapterContextMenuInfo
+            val position = info?.position
+            if (position == null) {
+                mostrarSnackbar("Error: No se pudo obtener la posición seleccionada")
+                return true
             }
-            R.id.context_menu_eliminar_reparacion -> {
-                val respuesta = controlador.eliminarReparacion(reparacionSeleccionada!!.id)
-                if (respuesta) {
-                    mostrarSnackbar("Reparación eliminada")
-                    actualizarLista()
-                } else {
-                    mostrarSnackbar("Error al eliminar reparación")
+
+            if (clienteSeleccionado == null) {
+                mostrarSnackbar("Error: No hay cliente seleccionado")
+                return true
+            }
+
+            val reparaciones = controlador.listarReparacionesPorCliente(clienteSeleccionado!!)
+            if (position >= reparaciones.size) {
+                mostrarSnackbar("Error: Posición inválida")
+                return true
+            }
+
+            reparacionSeleccionada = reparaciones[position]
+            if (reparacionSeleccionada == null) {
+                mostrarSnackbar("Error: No se pudo obtener la reparación seleccionada")
+                return true
+            }
+
+            when (item.itemId) {
+                R.id.context_menu_editar_reparacion -> {
+                    val intent = Intent(this, ActivityAgregarReparacion::class.java)
+                    intent.putExtra("reparacionId", reparacionSeleccionada!!.id.toString())
+                    intent.putExtra("clienteId", clienteSeleccionado.toString())
+                    startActivity(intent)
+                    return true
+                }
+                R.id.context_menu_eliminar_reparacion -> {
+                    val respuesta = controlador.eliminarReparacion(reparacionSeleccionada!!.id)
+                    if (respuesta) {
+                        mostrarSnackbar("Reparación eliminada")
+                        actualizarLista()
+                    } else {
+                        mostrarSnackbar("Error al eliminar reparación")
+                    }
+                    return true
+                }
+                R.id.context_menu_ver_mapa -> {
+                    try {
+                        val taller = reparacionSeleccionada!!.taller
+                        if (taller == null) {
+                            mostrarSnackbar("Error: La reparación no tiene un taller asignado")
+                            return true
+                        }
+
+                        // Verificar que el taller tiene coordenadas válidas
+                        if (taller.latitud == 0.0 && taller.longitud == 0.0) {
+                            mostrarSnackbar("Error: El taller no tiene coordenadas válidas")
+                            return true
+                        }
+
+                        val intent = Intent(this, MapaTallerActivity::class.java)
+                        intent.putExtra("taller", taller)
+                        startActivity(intent)
+                        return true
+                    } catch (e: Exception) {
+                        mostrarSnackbar("Error al abrir el mapa: ${e.message}")
+                        e.printStackTrace()
+                        return true
+                    }
                 }
             }
+        } catch (e: Exception) {
+            mostrarSnackbar("Error inesperado: ${e.message}")
+            e.printStackTrace()
+            return true
         }
         return super.onContextItemSelected(item)
     }

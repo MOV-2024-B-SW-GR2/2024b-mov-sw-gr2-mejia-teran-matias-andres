@@ -2,11 +2,14 @@ package com.example.clientereparacion
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import com.example.clientereparacion.modelo.Reparacion
+import com.example.clientereparacion.modelo.Taller
 import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -17,6 +20,8 @@ class ActivityAgregarReparacion : AppCompatActivity() {
     private lateinit var controlador: Controlador
     private var reparacionSeleccionada: Int? = null
     private var clienteSeleccionado: Int? = null
+    private lateinit var spinnerTaller: Spinner
+    private val talleres = TallerManager.obtenerTalleres()
 
     fun mostrarSnackbar(texto: String) {
         val snack = Snackbar.make(
@@ -32,6 +37,7 @@ class ActivityAgregarReparacion : AppCompatActivity() {
         setContentView(R.layout.activity_agregar_reparacion)
         controlador = Controlador(this)
         btnGuardarReparacion = findViewById(R.id.btn_guardar_reparacion)
+        spinnerTaller = findViewById(R.id.spinner_taller)
 
         val descripcion = findViewById<EditText>(R.id.descripcion_in)
         val fechaReparacion = findViewById<EditText>(R.id.fecha_reparacion_in)
@@ -39,6 +45,11 @@ class ActivityAgregarReparacion : AppCompatActivity() {
         val garantia = findViewById<CheckBox>(R.id.cb_garantia)
         clienteSeleccionado = intent.getStringExtra("clienteId")?.toIntOrNull()
         reparacionSeleccionada = intent.getStringExtra("reparacionId")?.toIntOrNull()
+
+        // Configurar el spinner de talleres
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, talleres)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerTaller.adapter = adapter
 
         reparacionSeleccionada?.let {
             val reparacion = controlador.listarReparacionesPorCliente(clienteSeleccionado!!)
@@ -49,6 +60,11 @@ class ActivityAgregarReparacion : AppCompatActivity() {
                 fechaReparacion.setText(sdf.format(reparacion.fechaReparacion))
                 costo.setText(reparacion.costo.toString())
                 garantia.isChecked = reparacion.garantia
+                // Seleccionar el taller correspondiente
+                val tallerIndex = talleres.indexOfFirst { it.id == reparacion.taller.id }
+                if (tallerIndex != -1) {
+                    spinnerTaller.setSelection(tallerIndex)
+                }
             }
         }
 
@@ -57,6 +73,7 @@ class ActivityAgregarReparacion : AppCompatActivity() {
             val fechaReparacionText = fechaReparacion.text.toString()
             val costoText = costo.text.toString().toDoubleOrNull()
             val garantiaChecked = garantia.isChecked
+            val tallerSeleccionado = spinnerTaller.selectedItem as Taller
 
             if (descripcionText.isNotBlank() && fechaReparacionText.isNotBlank() && costoText != null) {
                 val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -70,19 +87,20 @@ class ActivityAgregarReparacion : AppCompatActivity() {
                             fechaReparacionDate,
                             costoText,
                             garantiaChecked,
-                            clienteSeleccionado!!
+                            clienteSeleccionado!!,
+                            tallerSeleccionado
                         )
                     )
                     mostrarSnackbar("Reparación actualizada")
                 } else {
                     controlador.crearReparacion(
                         Reparacion(
-                            0,
                             descripcionText,
                             fechaReparacionDate,
                             costoText,
                             garantiaChecked,
-                            clienteSeleccionado!!
+                            clienteSeleccionado!!,
+                            tallerSeleccionado
                         )
                     )
                     mostrarSnackbar("Reparación creada")

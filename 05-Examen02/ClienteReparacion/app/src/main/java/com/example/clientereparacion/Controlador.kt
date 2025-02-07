@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import com.example.clientereparacion.modelo.Cliente
 import com.example.clientereparacion.modelo.Reparacion
+import com.example.clientereparacion.modelo.Taller
 import java.util.Date
 
 class Controlador(context: Context) {
@@ -14,7 +15,7 @@ class Controlador(context: Context) {
         val db = dbHelper.writableDatabase
         val valores = ContentValues().apply {
             put("nombre", cliente.nombre)
-            put("telefono", cliente.telefono) // Agregar teléfono
+            put("telefono", cliente.telefono)
             put("fecha_registro", cliente.fechaRegistro.time)
             put("es_miembro", if (cliente.esMiembro) 1 else 0)
         }
@@ -30,7 +31,7 @@ class Controlador(context: Context) {
         if (cursor.moveToFirst()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
             val nombre = cursor.getString(cursor.getColumnIndexOrThrow("nombre"))
-            val telefono = cursor.getString(cursor.getColumnIndexOrThrow("telefono")) // Agregar teléfono si es necesario
+            val telefono = cursor.getString(cursor.getColumnIndexOrThrow("telefono"))
             val fechaRegistro = Date(cursor.getLong(cursor.getColumnIndexOrThrow("fecha_registro")))
             val esMiembro = cursor.getInt(cursor.getColumnIndexOrThrow("es_miembro")) > 0
             cliente = Cliente(id, nombre, fechaRegistro, telefono, esMiembro)
@@ -48,7 +49,7 @@ class Controlador(context: Context) {
         while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
             val nombre = cursor.getString(cursor.getColumnIndexOrThrow("nombre"))
-            val telefono = cursor.getString(cursor.getColumnIndexOrThrow("telefono")) // Agregar teléfono
+            val telefono = cursor.getString(cursor.getColumnIndexOrThrow("telefono"))
             val fechaRegistro = Date(cursor.getLong(cursor.getColumnIndexOrThrow("fecha_registro")))
             val esMiembro = cursor.getInt(cursor.getColumnIndexOrThrow("es_miembro")) > 0
             clientes.add(Cliente(id, nombre, fechaRegistro, telefono, esMiembro))
@@ -63,7 +64,7 @@ class Controlador(context: Context) {
         val db = dbHelper.writableDatabase
         val valores = ContentValues().apply {
             put("nombre", cliente.nombre)
-            put("telefono", cliente.telefono) // Agregar teléfono
+            put("telefono", cliente.telefono)
             put("fecha_registro", cliente.fechaRegistro.time)
             put("es_miembro", if (cliente.esMiembro) 1 else 0)
         }
@@ -89,6 +90,10 @@ class Controlador(context: Context) {
             put("costo", reparacion.costo)
             put("garantia", if (reparacion.garantia) 1 else 0)
             put("cliente_id", reparacion.cliente_id)
+            put("taller_id", reparacion.taller.id)
+            put("taller_nombre", reparacion.taller.nombre)
+            put("taller_latitud", reparacion.taller.latitud)
+            put("taller_longitud", reparacion.taller.longitud)
         }
         val resultado = db.insert("REPARACION", null, valores)
         db.close()
@@ -101,13 +106,31 @@ class Controlador(context: Context) {
         val cursor = db.rawQuery("SELECT * FROM REPARACION WHERE cliente_id = ?", arrayOf(clienteId.toString()))
         val reparaciones = mutableListOf<Reparacion>()
         while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-            val descripcion = cursor.getString(cursor.getColumnIndexOrThrow("descripcion"))
-            val fechaReparacion = Date(cursor.getLong(cursor.getColumnIndexOrThrow("fecha_reparacion")))
-            val costo = cursor.getDouble(cursor.getColumnIndexOrThrow("costo"))
-            val garantia = cursor.getInt(cursor.getColumnIndexOrThrow("garantia")) > 0
-            val clienteIdDesdeBD = cursor.getInt(cursor.getColumnIndexOrThrow("cliente_id"))
-            reparaciones.add(Reparacion(id, descripcion, fechaReparacion, costo, garantia, clienteIdDesdeBD))
+            try {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val descripcion = cursor.getString(cursor.getColumnIndexOrThrow("descripcion"))
+                val fechaReparacion = Date(cursor.getLong(cursor.getColumnIndexOrThrow("fecha_reparacion")))
+                val costo = cursor.getDouble(cursor.getColumnIndexOrThrow("costo"))
+                val garantia = cursor.getInt(cursor.getColumnIndexOrThrow("garantia")) > 0
+                val clienteIdDesdeBD = cursor.getInt(cursor.getColumnIndexOrThrow("cliente_id"))
+                
+                // Intentar obtener datos del taller, usar valores por defecto si no existen
+                val taller = try {
+                    val tallerId = cursor.getInt(cursor.getColumnIndexOrThrow("taller_id"))
+                    val tallerNombre = cursor.getString(cursor.getColumnIndexOrThrow("taller_nombre"))
+                    val tallerLatitud = cursor.getDouble(cursor.getColumnIndexOrThrow("taller_latitud"))
+                    val tallerLongitud = cursor.getDouble(cursor.getColumnIndexOrThrow("taller_longitud"))
+                    Taller(tallerId, tallerNombre, tallerLatitud, tallerLongitud)
+                } catch (e: Exception) {
+                    // Si no encontramos las columnas del taller, usar el primer taller por defecto
+                    TallerManager.obtenerTalleres().first()
+                }
+
+                reparaciones.add(Reparacion(id, descripcion, fechaReparacion, costo, garantia, clienteIdDesdeBD, taller))
+            } catch (e: Exception) {
+                // Si hay algún error al leer una reparación, la saltamos
+                continue
+            }
         }
         cursor.close()
         db.close()
@@ -122,6 +145,14 @@ class Controlador(context: Context) {
             put("fecha_reparacion", reparacion.fechaReparacion.time)
             put("costo", reparacion.costo)
             put("garantia", if (reparacion.garantia) 1 else 0)
+            try {
+                put("taller_id", reparacion.taller.id)
+                put("taller_nombre", reparacion.taller.nombre)
+                put("taller_latitud", reparacion.taller.latitud)
+                put("taller_longitud", reparacion.taller.longitud)
+            } catch (e: Exception) {
+                // Si no podemos actualizar los datos del taller, continuamos sin ellos
+            }
         }
         val rows = db.update("REPARACION", valores, "id = ?", arrayOf(reparacion.id.toString()))
         db.close()
@@ -142,13 +173,30 @@ class Controlador(context: Context) {
         val cursor = db.rawQuery("SELECT * FROM REPARACION WHERE id = ?", arrayOf(reparacionId.toString()))
         var reparacion: Reparacion? = null
         if (cursor.moveToFirst()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-            val descripcion = cursor.getString(cursor.getColumnIndexOrThrow("descripcion"))
-            val fechaReparacion = Date(cursor.getLong(cursor.getColumnIndexOrThrow("fecha_reparacion")))
-            val costo = cursor.getDouble(cursor.getColumnIndexOrThrow("costo"))
-            val garantia = cursor.getInt(cursor.getColumnIndexOrThrow("garantia")) > 0
-            val clienteId = cursor.getInt(cursor.getColumnIndexOrThrow("cliente_id"))
-            reparacion = Reparacion(id, descripcion, fechaReparacion, costo, garantia, clienteId)
+            try {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val descripcion = cursor.getString(cursor.getColumnIndexOrThrow("descripcion"))
+                val fechaReparacion = Date(cursor.getLong(cursor.getColumnIndexOrThrow("fecha_reparacion")))
+                val costo = cursor.getDouble(cursor.getColumnIndexOrThrow("costo"))
+                val garantia = cursor.getInt(cursor.getColumnIndexOrThrow("garantia")) > 0
+                val clienteId = cursor.getInt(cursor.getColumnIndexOrThrow("cliente_id"))
+                
+                // Intentar obtener datos del taller, usar valores por defecto si no existen
+                val taller = try {
+                    val tallerId = cursor.getInt(cursor.getColumnIndexOrThrow("taller_id"))
+                    val tallerNombre = cursor.getString(cursor.getColumnIndexOrThrow("taller_nombre"))
+                    val tallerLatitud = cursor.getDouble(cursor.getColumnIndexOrThrow("taller_latitud"))
+                    val tallerLongitud = cursor.getDouble(cursor.getColumnIndexOrThrow("taller_longitud"))
+                    Taller(tallerId, tallerNombre, tallerLatitud, tallerLongitud)
+                } catch (e: Exception) {
+                    // Si no encontramos las columnas del taller, usar el primer taller por defecto
+                    TallerManager.obtenerTalleres().first()
+                }
+
+                reparacion = Reparacion(id, descripcion, fechaReparacion, costo, garantia, clienteId, taller)
+            } catch (e: Exception) {
+                // Si hay algún error al leer la reparación, retornamos null
+            }
         }
         cursor.close()
         db.close()
